@@ -15,6 +15,7 @@ module register_file(
     end
     assign r_data1 = mem[r_addr1];
     assign r_data2 = mem[r_addr2];
+    /*
     parameter CYCLE = 100;
     integer i;
     initial begin
@@ -23,4 +24,5 @@ module register_file(
             $display("%x",mem[i]);
         end
     end
+    */
 endmodule
