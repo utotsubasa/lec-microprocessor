@@ -83,7 +83,7 @@ module decoder(
                     rs1 <= ir[19:15];
                     rs2 <= ir[24:20];
                     // imm_reg <= {{19{ir[31]}},ir[31],ir[7],ir[30:25],ir[11:8],0}; 
-                    imm_reg[32:1] <= {{19{ir[31]}},ir[31],ir[7],ir[30:25],ir[11:8]}; 
+                    imm_reg[31:1] <= {{19{ir[31]}},ir[31],ir[7],ir[30:25],ir[11:8]}; 
                     case(op_type)
                         3'd0: alucode <= `ALU_BEQ;
                         3'd1: alucode <= `ALU_BNE;
@@ -102,7 +102,7 @@ module decoder(
                 begin
                     rs1 <= ir[19:15];
                     rd <= ir[11:7];
-                    imm_reg[11:0] <= ir[31:20];
+                    imm_reg <= {{20{ir[31]}},ir[31:20]};
                     case(op_type)
                         3'd0: alucode <= `ALU_LB;
                         3'd1: alucode <= `ALU_LH;
@@ -120,7 +120,7 @@ module decoder(
                 begin
                     rs1 <= ir[19:15];
                     rs2 <= ir[24:20];
-                    imm_reg[11:0] <= {ir[31:25],ir[11:7]};
+                    imm_reg <= {{20{ir[31]}},ir[31:25],ir[11:7]};
                     case(op_type)
                         3'd0: alucode <= `ALU_SB;
                         3'd1: alucode <= `ALU_SH;
