@@ -33,7 +33,33 @@ module cpu(
     wire [31:0] w_data_word;
     wire [31:0] r_store_addr;
     wire [31:0] w_store_addr;
-
+    integer fd;
+    initial begin
+        fd = $fopen("/home/denjo/デスクトップ/後期実験/マイクロプロセッサ/work/file.trace","w");
+    end
+    always @(posedge sysclk) begin
+        if(alucode >= 14 && alucode <= 16) begin // store
+            if(alucode == 14) $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination); mem[0x%8'h] <- 0x%2'h", pc,ir,w_store_addr,w_data_byte);
+            if(alucode == 15) $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination); mem[0x%8'h] <- 0x%4'h", pc,ir,w_store_addr,w_data_half);
+            if(alucode == 16) $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination); mem[0x%8'h] <- 0x%8'h", pc,ir,w_store_addr,w_data_word);
+        end else if(alucode >= 9 && alucode <= 13 ) begin // load
+            if(alucode == 9 || alucode == 12) begin
+                if(dstreg_num == 0) begin $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination);            0x%02'h <- mem[0x%8'h]", pc,ir,load_value[7:0],r_store_addr);
+                end else begin $fdisplay(fd,"0x%4'h: 0x%8'h # x%02'd = 0x%8'h;            0x%02'h <- mem[0x%8'h]", pc,ir,dstreg_num,write_value,load_value[7:0],r_store_addr); end
+            end else if(alucode == 10 || alucode == 13) begin
+                if(dstreg_num == 0) begin $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination);          0x%04'h <- mem[0x%8'h]", pc,ir,load_value[15:0],r_store_addr);
+                end else begin $fdisplay(fd,"0x%4'h: 0x%8'h # x%02'd = 0x%8'h;          0x%04'h <- mem[0x%8'h]", pc,ir,dstreg_num,write_value,load_value[15:0],r_store_addr); end
+            end else begin
+                if(dstreg_num == 0) begin $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination);      0x%08'h <- mem[0x%8'h]", pc,ir,load_value,r_store_addr);
+                end else begin $fdisplay(fd,"0x%4'h: 0x%8'h # x%02'd = 0x%8'h;      0x%08'h <- mem[0x%8'h]", pc,ir,dstreg_num,write_value,load_value,r_store_addr); end
+            end
+        end else if(alucode >= 2 && alucode <= 8) begin
+            $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination)", pc,ir);
+        end else begin
+            if(dstreg_num != 0) begin $fdisplay(fd,"0x%4'h: 0x%8'h # x%02'd = 0x%8'h", pc,ir,dstreg_num,write_value);
+            end else begin $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination)", pc,ir); end
+        end
+    end
     assign write_value = is_load ? load_value : alu_result; 
     pc pc0( // 済
         .clk(sysclk),
