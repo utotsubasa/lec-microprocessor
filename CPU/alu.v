@@ -58,27 +58,27 @@ module alu(
                 end
             `ALU_LB:
                 begin
-                    alu_result <= $signed(op1) + $signed(op2);
+                    alu_result <= op1 + op2;
                     br_taken <= 0;      
                 end
             `ALU_LH:
                 begin
-                    alu_result <= $signed(op1) + $signed(op2);
+                    alu_result <= op1 + op2;
                     br_taken <= 0;      
                 end
             `ALU_LW:
                 begin
-                    alu_result <= $signed(op1) + $signed(op2);
+                    alu_result <= op1 + op2;
                     br_taken <= 0;      
                 end
             `ALU_LBU:
                 begin
-                    alu_result <= $unsigned(op1) + $unsigned(op2);
+                    alu_result <= op1 + op2;
                     br_taken <= 0;      
                 end
             `ALU_LHU:
                 begin
-                    alu_result <= $unsigned(op1) + $unsigned(op2);
+                    alu_result <= op1 + op2;
                     br_taken <= 0;      
                 end
             `ALU_SB:
@@ -148,4 +148,7 @@ module alu(
             `ALU_NOP:;
         endcase
     end
+    // always begin
+    //    alu_result <= res;
+    // end
 endmodule
