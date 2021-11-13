@@ -12,7 +12,7 @@ module data_memory(
     output wire [31:0] r_data_word
 ); 
     reg [31:0] mem [0:'h7fff];
-        initial $readmemh("/home/denjo/デスクトップ/後期実験/マイクロプロセッサ/b3exp-master/benchmarks/Coremark/data.hex", mem);
+        initial $readmemh("/home/denjo/デスクトップ/後期実験/マイクロプロセッサ/b3exp-master/benchmarks/Coremark_for_Synthesis/data.hex", mem);
     always @(posedge clk) begin
         if(is_store) begin
             case(alucode)
@@ -21,9 +21,10 @@ module data_memory(
                 `ALU_SH: mem[w_addr>>2][(3-w_addr%4)*8+7 -: 16] <= w_data_half;
                 `ALU_SW: mem[w_addr>>2] <= w_data_word;
                 */
-                 `ALU_SB: mem[w_addr>>2][(w_addr%4)*8+7 -: 8] <= w_data_byte;
+                `ALU_SB: mem[w_addr>>2][(w_addr%4)*8+7 -: 8] <= w_data_byte;
                 `ALU_SH: mem[w_addr>>2][(w_addr%4)*8+15 -: 16] <= w_data_half;
                 `ALU_SW: mem[w_addr>>2] <= w_data_word;
+                default: ;
             endcase
         end
     end
