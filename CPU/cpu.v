@@ -1,6 +1,9 @@
+/* verilator lint_off IMPLICIT */
 module cpu(
         input wire sysclk,
-        input wire cpu_resetn
+        input wire cpu_resetn,
+        // 追加
+        output wire uart_tx
     );
 
     wire [31:0] pc;
@@ -33,6 +36,7 @@ module cpu(
     wire [31:0] w_data_word;
     wire [31:0] r_store_addr;
     wire [31:0] w_store_addr;
+    /*
     integer fd;
     initial begin
         fd = $fopen("/home/denjo/デスクトップ/後期実験/マイクロプロセッサ/work/file.trace","w");
@@ -60,7 +64,8 @@ module cpu(
             end else begin $fdisplay(fd,"0x%4'h: 0x%8'h # (no destination)", pc,ir); end
         end
     end
-    assign write_value = is_load ? load_value : alu_result; 
+    */
+    `include "define.vh"
     pc pc0( // 済
         .clk(sysclk),
         .reset(cpu_resetn),
@@ -147,4 +152,32 @@ module cpu(
         .reg_data(r_data1),
         .npc(npc)
     );
+    
+    // 追加
+    wire [7:0] uart_IN_data;
+    wire uart_we;
+    wire uart_OUT_data;
+    uart uart0(
+        .uart_tx(uart_OUT_data),
+        .uart_wr_i(uart_we),
+        .uart_dat_i(uart_IN_data),
+        .sys_clk_i(sysclk),
+        .sys_rstn_i(cpu_resetn)
+    );
+    assign uart_IN_data = w_data_byte;  // ストアするデータをモジュールへ入力
+    assign uart_we = ((w_store_addr == `UART_ADDR) && (is_store == `ENABLE)) ? 1'b1 : 1'b0;  // シリアル通信用アドレスへのストア命令実行時に送信開始信号をアサート
+    assign uart_tx = uart_OUT_data;  // シリアル通信モジュールの出力はFPGA外部へと出力
+
+    // 追加
+    wire [31:0] hc_OUT_data;
+    hardware_counter hardware_counter0(
+        .CLK_IP(sysclk),
+        .RSTN_IP(cpu_resetn),
+        .COUNTER_OP(hc_OUT_data)
+    );
+    wire [31:0] ma_load_value;
+    // load_value -> ma_load_value
+    assign write_value = is_load ? ma_load_value : alu_result; 
+    // 追加
+    assign ma_load_value =  ((alucode == `ALU_LW) && (r_store_addr == `HARDWARE_COUNTER_ADDR)) ? hc_OUT_data : load_value;
 endmodule
