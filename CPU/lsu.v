@@ -35,6 +35,7 @@ module lsu(
             `ALU_LW: load_data_func = r_data_word;
             `ALU_LBU: load_data_func = {24'b0,r_data_byte};
             `ALU_LHU: load_data_func = {16'b0,r_data_half};
+            default: ;
         endcase
     endfunction
     assign load_data = load_data_func(alucode,r_data_byte,r_data_half,r_data_word);
