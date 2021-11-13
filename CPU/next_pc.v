@@ -42,6 +42,7 @@ module next_pc(
             `ALU_SRL: funcpc = pc + 4;
             `ALU_SRA: funcpc = pc + 4;
             `ALU_NOP: funcpc = pc + 4;
+            default: ;
         endcase
     endfunction
     assign npc = funcpc(alucode,pc,imm,reg_data,br_taken);
